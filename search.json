@@ -107,7 +107,7 @@
   {
     "objectID": "ensino/2026-1-tecnicas-de-otimizacao-aplicadas-a-sistemas-agroindustriais.html",
     "href": "ensino/2026-1-tecnicas-de-otimizacao-aplicadas-a-sistemas-agroindustriais.html",
-    "title": "Economia das cadeias de valor agroalimentares",
+    "title": "Técnicas de otimização aplicadas a sistemas agroindustriais",
     "section": "",
     "text": "Resolução de problemas\nAula 1 - Conceitos básicos de modelagem, métodos algébricos e gráficos\nAula 2 - Programação linear 1: Regra de Cramer e método de Gauss-Jordan\nAula 3 - Programação linear 2: Método gráfico e casos especiais\nCasos especiais: variáveis sem restrição de positividade, problema impossível, solução no infinito e soluções múltiplas.\nAula 4 - Programação linear 3: Método Simplex (Parte 1)\nAula 5 - Programação linear 3: Método Simplex (Parte 2)\nAula 6 - Dualidade\nAula 7 - Modelos de transporte\nAula 8 - Programação inteira\nAula 9 - Problemas de planejamento agrícola\nFundamentos para Machine Learning\nAula 10 - Modelos não lineares 1: Método gradiente descendente (Parte 1)\nAula 11 - Modelos não lineares 2: Método gradiente descendente (Parte 2)\nAula 12 - Modelos não lineares 3: Método de Newton (Parte 1)\nAula 13 - Modelos não lineares 4: Método de Newton (Parte 2)"
   },
@@ -123,6 +123,6 @@
     "href": "ensino/disciplinas.html",
     "title": "Disciplinas",
     "section": "",
-    "text": "2026.1\nAGRI0157 - Tópicos Especiais II Técnicas de otimização aplicadas a sistemas agroindustriais\n\n\n2025.2\nAGRI0156 - Tópicos Especiais I Economia das cadeias de valor agroalimentares"
+    "text": "Técnicas de otimização aplicadas a sistemas agroindustriais\nEconomia das cadeias de valor agroalimentares"
   }
 ]
