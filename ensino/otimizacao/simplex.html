@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Conteúdo – Edmo Cavalcante</title>
+<title>Simplex – Edmo Cavalcante</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -78,8 +78,38 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -296,8 +326,29 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Nesta página</h2>
+   
+  <ul>
+  <li><a href="#problema-de-aplicação" id="toc-problema-de-aplicação" class="nav-link active" data-scroll-target="#problema-de-aplicação">Problema de aplicação</a>
+  <ul class="collapse">
+  <li><a href="#definição-das-variáveis-de-decisão" id="toc-definição-das-variáveis-de-decisão" class="nav-link" data-scroll-target="#definição-das-variáveis-de-decisão">Definição das variáveis de decisão</a></li>
+  <li><a href="#representação-do-modelo-de-programação-linear" id="toc-representação-do-modelo-de-programação-linear" class="nav-link" data-scroll-target="#representação-do-modelo-de-programação-linear">Representação do modelo de programação linear</a></li>
+  <li><a href="#inclusão-das-variáveis-de-folga" id="toc-inclusão-das-variáveis-de-folga" class="nav-link" data-scroll-target="#inclusão-das-variáveis-de-folga">Inclusão das variáveis de folga</a></li>
+  <li><a href="#solução-básica-inicial" id="toc-solução-básica-inicial" class="nav-link" data-scroll-target="#solução-básica-inicial">Solução básica inicial</a></li>
+  <li><a href="#como-melhorar-a-solução-inicial" id="toc-como-melhorar-a-solução-inicial" class="nav-link" data-scroll-target="#como-melhorar-a-solução-inicial">Como melhorar a solução inicial?</a></li>
+  </ul></li>
+  <li><a href="#generalização-do-método-simplex" id="toc-generalização-do-método-simplex" class="nav-link" data-scroll-target="#generalização-do-método-simplex">Generalização do método Simplex</a></li>
+  <li><a href="#exemplo-de-tableau" id="toc-exemplo-de-tableau" class="nav-link" data-scroll-target="#exemplo-de-tableau">Exemplo de tableau</a>
+  <ul class="collapse">
+  <li><a href="#modelo" id="toc-modelo" class="nav-link" data-scroll-target="#modelo">Modelo</a></li>
+  <li><a href="#tableau-inicial" id="toc-tableau-inicial" class="nav-link" data-scroll-target="#tableau-inicial">Tableau inicial</a></li>
+  <li><a href="#iteração-1" id="toc-iteração-1" class="nav-link" data-scroll-target="#iteração-1">Iteração 1</a></li>
+  <li><a href="#iteração-2" id="toc-iteração-2" class="nav-link" data-scroll-target="#iteração-2">Iteração 2</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -305,7 +356,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Conteúdo</h1>
+<h1 class="title">Simplex</h1>
 </div>
 
 
@@ -322,11 +373,281 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><a href="../../ensino/otimizacao/modelagem.html">Aula 1: Modelagem</a><br>
-<a href="../../ensino/otimizacao/programacao-linear.html">Aula 2: Programação Linear</a><br>
-<a href="../../ensino/otimizacao/simplex.html">Aula 3: Simplex</a></p>
+<section id="problema-de-aplicação" class="level2">
+<h2 class="anchored" data-anchor-id="problema-de-aplicação">Problema de aplicação</h2>
+<p>Para uma determinada área, utilizada para o plantio de soja e algodão, calcula-se que há 800 homens-horas disponíveis durante o período de semeadura; e que são necessários 20 homens-horas por hectare de soja e 40 homens-horas por hectare de algodão. Oferece-se ainda uma linha máxima de crédito de R$ 6.000, dividida da seguinte forma: R$ 300 por hectare de soja e R$ 100 por hectare de algodão. Como organizar esta área de plantio se é sabido que as margens de lucro esperadas são R$ 100 por hectare de soja e R$ 80 por hectare de algodão?</p>
+<section id="definição-das-variáveis-de-decisão" class="level3">
+<h3 class="anchored" data-anchor-id="definição-das-variáveis-de-decisão">Definição das variáveis de decisão</h3>
+<p>Para determinar as áreas de soja e algodão a serem plantadas, definem-se as seguintes variáveis:</p>
+<ul>
+<li><span class="math inline">\(x_1\)</span>: número de hectares de soja a serem plantados;</li>
+<li><span class="math inline">\(x_2\)</span>: número de hectares de algodão a serem plantados.</li>
+</ul>
+</section>
+<section id="representação-do-modelo-de-programação-linear" class="level3">
+<h3 class="anchored" data-anchor-id="representação-do-modelo-de-programação-linear">Representação do modelo de programação linear</h3>
+<p><strong>Função objetivo</strong></p>
+<p>Maximizar o lucro total:</p>
+<p><span class="math display">\[max Z = 100x_1 + 80x_2\]</span></p>
+<p><strong>Restrições</strong></p>
+<p>Restrição de mão de obra:</p>
+<p><span class="math display">\[20x_1 + 40x_2 \leq 800\]</span></p>
+<p>Restrição de crédito:</p>
+<p><span class="math display">\[300x_1 + 100x_2 \leq 6000\]</span></p>
+<p>Não negatividade:</p>
+<p><span class="math display">\[x_1, x_2 \geq 0\]</span></p>
+</section>
+<section id="inclusão-das-variáveis-de-folga" class="level3">
+<h3 class="anchored" data-anchor-id="inclusão-das-variáveis-de-folga">Inclusão das variáveis de folga</h3>
+<p>Para transformar as desigualdades em igualdades, incluem-se as variáveis de folga (S_1) e (S_2):</p>
+<ul>
+<li><span class="math inline">\(S_1\)</span>: folga associada à restrição de mão de obra;</li>
+<li><span class="math inline">\(S_2\)</span>: folga associada à restrição de crédito.</li>
+</ul>
+<p>O modelo passa a ser:</p>
+<p><span class="math display">\[20x_1 + 40x_2 + S_1 = 800\]</span></p>
+<p><span class="math display">\[300x_1 + 100x_2 + S_2 = 6000\]</span></p>
+<p>com:</p>
+<p><span class="math display">\[x_1, x_2, S_1, S_2 \geq 0\]</span></p>
+<p>As variáveis <span class="math inline">\(S_1\)</span> e <span class="math inline">\(S_2\)</span>, quando assumem valores não nulos, são chamadas de <strong>variáveis básicas</strong>.</p>
+</section>
+<section id="solução-básica-inicial" class="level3">
+<h3 class="anchored" data-anchor-id="solução-básica-inicial">Solução básica inicial</h3>
+<p>Partindo da origem:</p>
+<p><span class="math display">\[x_1 = 0\]</span></p>
+<p><span class="math display">\[x_2 = 0\]</span></p>
+<p>obtêm-se:</p>
+<p><span class="math display">\[S_1 = 800\]</span></p>
+<p><span class="math display">\[S_2 = 6000\]</span></p>
+<p>Logo, a solução inicial é:</p>
+<p><span class="math display">\[(x_1,x_2,S_1,S_2)=(0,0,800,6000)\]</span></p>
+<p>e o lucro inicial é:</p>
+<p><span class="math display">\[Z=0\]</span></p>
+<p>Essa solução é viável, mas não é necessariamente ótima.</p>
+</section>
+<section id="como-melhorar-a-solução-inicial" class="level3">
+<h3 class="anchored" data-anchor-id="como-melhorar-a-solução-inicial">Como melhorar a solução inicial?</h3>
+<p>Para melhorar a solução inicial, utilizam-se mecanismos de <strong>troca</strong> ou <strong>pivoteamento</strong>, por meio dos seguintes passos:<br>
+1. <strong>Escolher a variável que entra na base</strong>: Seleciona-se a variável com maior contribuição positiva para a função objetivo.<br>
+2. <strong>Determinar a variável que deixa a base</strong>: Resolve-se cada restrição para a variável que entra, mantendo as demais variáveis iguais a zero.<br>
+3. <strong>Aplicar o teste da razão mínima</strong>: Identifica-se qual restrição se tornará limitante primeiro. A menor razão positiva determina a variável que deixa a base.<br>
+4. <strong>Restabelecer a matriz identidade</strong>: Utiliza-se o método de eliminação de Gauss para obter o novo sistema de equações.</p>
+<section id="primeira-iteração" class="level4">
+<h4 class="anchored" data-anchor-id="primeira-iteração">Primeira iteração</h4>
+<p>A variável com maior contribuição para (Z) é (x_1), cujo coeficiente é 100. Portanto:</p>
+<p><span class="math display">\[x_1 \text{ entra na base}\]</span></p>
+<p>Com <span class="math inline">\(x_2=0\)</span>, analisam-se as restrições:</p>
+<p><em>Restrição 1</em></p>
+<p><span class="math display">\[20x_1 \leq 800\]</span></p>
+<p><span class="math display">\[x_1 \leq 40\]</span></p>
+<p><em>Restrição 2</em></p>
+<p><span class="math display">\[300x_1 \leq 6000\]</span></p>
+<p><span class="math display">\[x_1 \leq 20\]</span></p>
+<p>A menor razão positiva é:</p>
+<p><span class="math display">\[\min(40,20)=20\]</span></p>
+<p>Assim, a restrição 2 torna-se limitante primeiro e <span class="math inline">\(S_2\)</span> deixa a base.</p>
+<p>O pivô é o coeficiente 300 da segunda restrição.</p>
+<p>Após o pivoteamento, obtém-se:</p>
+<p><span class="math display">\[x_1 + \frac{1}{3}x_2 + \frac{1}{300}S_2 = 20\]</span></p>
+<p>A primeira restrição pode ser reescrita como:</p>
+<p><span class="math display">\[S_1 = 800 - 20x_1 - 40x_2\]</span></p>
+<p>Substituindo a nova expressão de (x_1):</p>
+<p><span class="math display">\[S_1 = 400 - \frac{100}{3}x_2 + \frac{1}{15}S_2\]</span></p>
+<p>A função objetivo passa a ser:</p>
+<p><span class="math display">\[Z = 2000 + \frac{140}{3}x_2 - \frac{1}{3}S_2\]</span></p>
+<p><em>Nova base</em></p>
+<p>A nova base é formada por: <span class="math inline">\(S_1\)</span>, <span class="math inline">\(x_1\)</span></p>
+</section>
+<section id="segunda-iteração" class="level4">
+<h4 class="anchored" data-anchor-id="segunda-iteração">Segunda iteração</h4>
+<p>Na segunda iteração, (x_2) possui contribuição positiva para a função objetivo:</p>
+<p>[ ]</p>
+<p>Portanto:</p>
+<p>[ x_2 ]</p>
+<p>A variável que deixa a base é (S_1), pois sua equação impõe o limite:</p>
+<p>[ S_1 = 400 - x_2 + S_2 ]</p>
+<p>Com (S_2=0):</p>
+<p>[ x_2 ]</p>
+<p>[ x_2 ]</p>
+<p>Logo:</p>
+<p>[ S_1 ]</p>
+<p>Após o segundo pivoteamento, obtém-se a solução ótima:</p>
+<p>[ x_1 = 16 ]</p>
+<p>[ x_2 = 12 ]</p>
+<p>As variáveis de folga são:</p>
+<p>[ S_1=0 ]</p>
+<p>[ S_2=0 ]</p>
+<p>O lucro máximo é:</p>
+<p>[ Z = 100(16)+80(12) ]</p>
+<p>[ Z = 1600+960 ]</p>
+<p>[ ]</p>
+<p>A área deve ser organizada da seguinte maneira: - <strong>16 hectares de soja</strong>; - <strong>12 hectares de algodão</strong>.</p>
+<p>O lucro máximo esperado é de:</p>
+<p>[ ]</p>
+<p>As duas restrições são totalmente utilizadas:</p>
+<ul>
+<li>mão de obra: 800 homens-horas;</li>
+<li>crédito: R$ 6.000.</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="generalização-do-método-simplex" class="level2">
+<h2 class="anchored" data-anchor-id="generalização-do-método-simplex">Generalização do método Simplex</h2>
+<p>Um sistema de equações lineares pode ser representado no seguinte <strong>tableau Simplex</strong>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Base</th>
+<th style="text-align: right;">(c_j)</th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td>(c_b)</td>
+<td>Variável básica</td>
+<td style="text-align: right;">(b_i^*)</td>
+<td style="text-align: right;">(a_{i1})</td>
+<td style="text-align: right;">(a_{i2})</td>
+<td style="text-align: right;">()</td>
+<td style="text-align: right;">(a_{ij})</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>Significado dos elementos:<br>
+- (i): linha; - (j): coluna; - (c_j): coeficientes da função objetivo; - (c_b): coeficientes das variáveis básicas; - (a_{ij}): coeficientes técnicos das restrições; - <strong>Base</strong>: conjunto das variáveis representativas da solução corrente; - (b_i^*): termo do lado direito; inicialmente representa o recurso disponível e, posteriormente, o valor da solução do problema; - (z_j): decréscimo no valor da função objetivo associado à produção de uma unidade da variável básica (j); - (c_j-z_j): acréscimo unitário na função objetivo caso a variável não básica (j) entre na solução.</p>
+</section>
+<section id="exemplo-de-tableau" class="level2">
+<h2 class="anchored" data-anchor-id="exemplo-de-tableau">Exemplo de tableau</h2>
+<section id="modelo" class="level3">
+<h3 class="anchored" data-anchor-id="modelo">Modelo</h3>
+<p>Maximizar:</p>
+<p>[ Z=100x_1+80x_2 ]</p>
+<p>Sujeito a:</p>
+<p>[ 2x_1+4x_2 ]</p>
+<p>[ 3x_1+x_2 ]</p>
+<p>[ x_1,x_2 ]</p>
+</section>
+<section id="tableau-inicial" class="level3">
+<h3 class="anchored" data-anchor-id="tableau-inicial">Tableau inicial</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Base</th>
+<th style="text-align: right;">(c_b)</th>
+<th style="text-align: right;">(b_i^*)</th>
+<th style="text-align: right;">(x_1)</th>
+<th style="text-align: right;">(x_2)</th>
+<th style="text-align: right;">(S_1)</th>
+<th style="text-align: right;">(S_2)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(S_1)</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>(S_2)</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td>(Z)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td>(c_j-z_j)</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="iteração-1" class="level3">
+<h3 class="anchored" data-anchor-id="iteração-1">Iteração 1</h3>
+<p>Na primeira iteração, escolhe-se a variável com maior contribuição positiva para (Z). A variável (x_1), com coeficiente 100, entra na base.</p>
+<p>O teste da razão mínima é:</p>
+<p>[ =40 ]</p>
+<p>[ =20 ]</p>
+<p>Logo, (S_2) deixa a base.</p>
+</section>
+<section id="iteração-2" class="level3">
+<h3 class="anchored" data-anchor-id="iteração-2">Iteração 2</h3>
+<p>Na segunda iteração, a variável com maior contribuição positiva entra na base. O processo continua até que não existam coeficientes positivos na linha (c_j-z_j), condição que indica a solução ótima para um problema de maximização.</p>
+<p>O método Simplex percorre soluções básicas viáveis, realizando trocas entre variáveis básicas e não básicas. Em cada iteração, busca-se aumentar o valor da função objetivo até alcançar uma solução ótima ou identificar que o problema possui alguma particularidade, como inviabilidade ou ilimitabilidade.</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
